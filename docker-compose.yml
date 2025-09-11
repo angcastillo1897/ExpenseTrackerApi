@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15
+    container_name: expensetracker-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${BD_NAME}
+      POSTGRES_USER: ${BD_USERNAME}
+      POSTGRES_PASSWORD: ${BD_PASSWORD}
+    ports:
+      - "${BD_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
