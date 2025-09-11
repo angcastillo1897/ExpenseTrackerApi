@@ -8,19 +8,9 @@ from alembic import context
 from src.settings import settings
 
 #ENTITIES
-# from src.entities.property import Property
-# from src.entities.subsection import Subsection
-# from src.entities.cost_center import CostCenter
-# from src.entities.accountig_account import AccountingAccount
-# from src.entities.accountig_account_property import AccountingAccountProperty
-# from src.entities.accountig_account_cost_center import AccountingAccountCostCenter
-# from src.entities.accountig_account_cost_center_collaborator import AccountingAccountCostCenterCollaborator
-# from src.entities.budget_by_period import BudgetByPeriod
-# from src.entities.budget_history import BudgetHistory
-# from src.entities.update_frequency import UpdateFrequency
-#########
+from src.domain.users.models import UserModel 
 
-from core.db_connection import Model
+from src.core.utils.db_connection import Model
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -37,7 +27,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = Model.metadata
 
-URI = (f"postgresql+asyncpg://{settings.BD_USERNAME}:"
+URI = (f"postgresql+psycopg2://{settings.BD_USERNAME}:"
     f"{settings.BD_PASSWORD}@"
     f"{settings.BD_HOST}:"
     f"{settings.BD_PORT}/"

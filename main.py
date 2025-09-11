@@ -6,7 +6,7 @@ from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 from src.settings import settings
 from src.core.exceptions import exception_handlers
-from src.routes import load_routes
+from src.api.router import load_routes
 
 app: FastAPI = FastAPI(
     title="EXPENSE TRACKER API",

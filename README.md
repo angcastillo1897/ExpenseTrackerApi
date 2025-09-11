@@ -31,3 +31,14 @@ Controllers = handle requests.
 Services = define business rules.
 Repositories = talk to DB.
 Models = represent data.
+
+### Database
+
+- uv run alembic revision --autogenerate -m "add user model base"
+- uv run alembic upgrade head
+- uv run alembic history
+
+## TO DO LATER
+
+- check response methods , if its ok , or add something.
+- create crud to auth and user register and get info, add more fields and refresh token.
