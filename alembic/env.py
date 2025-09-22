@@ -8,7 +8,9 @@ from alembic import context
 from src.settings import settings
 
 #ENTITIES
-from src.domain.users.models import UserModel 
+from src.domain.users.models import User
+from src.domain.categories.models import Category
+from src.domain.transactions.models import Transaction 
 
 from src.core.utils.db_connection import Model
 
