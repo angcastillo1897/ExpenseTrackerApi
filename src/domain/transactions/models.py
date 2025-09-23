@@ -15,8 +15,15 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    # Foreign Keys
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("categories.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     amount: Mapped[float] = mapped_column(Float, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String(400), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, default=func.now())
@@ -27,5 +34,7 @@ class Transaction(Base):
     )
 
     # Relationships
-    user: Mapped["User"] = relationship(back_populates="transactions")
-    category: Mapped["Category"] = relationship(back_populates="transactions")
+    user: Mapped["User"] = relationship("User", back_populates="transactions")
+    category: Mapped["Category"] = relationship(
+        "Category", back_populates="transactions"
+    )

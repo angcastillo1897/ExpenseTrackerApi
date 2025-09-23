@@ -8,7 +8,7 @@ from pydantic import BaseModel, EmailStr
 class UserRead(BaseModel):
     id: int
     email: EmailStr
-    created_at: datetime
+    full_name: str
 
     class Config:
         from_attributes = True
@@ -25,3 +25,27 @@ class RegisterResponse(BaseModel):
     user: UserRead
     access_token: str
     refresh_token: str
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class LoginResponse(BaseModel):
+    user: UserRead
+    access_token: str
+    refresh_token: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: EmailStr
+    first_name: str
+    last_name: str
+    full_name: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

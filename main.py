@@ -4,9 +4,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
-from src.settings import settings
-from src.core.exceptions import exception_handlers
 from src.api.router import load_routes
+from src.core.exceptions import exception_handlers
+from src.settings import settings
+import src.api.models # Import all models to register them with SQLAlchemy
 
 app: FastAPI = FastAPI(
     title="EXPENSE TRACKER API",

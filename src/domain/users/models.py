@@ -30,5 +30,17 @@ class User(Base):
     )
 
     # Relationships
-    categories: Mapped[list["Category"]] = relationship(back_populates="user")
-    transactions: Mapped[list["Transaction"]] = relationship(back_populates="user")
+    categories: Mapped[list["Category"]] = relationship(
+        "Category",
+        back_populates="user",
+        cascade="all, delete-orphan",  # Delete categories when user is deleted
+    )
+    transactions: Mapped[list["Transaction"]] = relationship(
+        "Transaction",
+        back_populates="user",
+        cascade="all, delete-orphan",  # Delete transactions when user is deleted
+    )
+
+    @property
+    def full_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"

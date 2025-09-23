@@ -18,8 +18,15 @@ class Category(Base):
     type: Mapped[str] = mapped_column(
         Enum("income", "expense", name="category_type"), nullable=False
     )
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
 
     # Relationships
-    user: Mapped["User"] = relationship(back_populates="categories")
-    transactions: Mapped[list["Transaction"]] = relationship(back_populates="category")
+    user: Mapped["User"] = relationship("User", back_populates="categories")
+    transactions: Mapped[list["Transaction"]] = relationship(
+        "Transaction",
+        back_populates="category",
+        cascade="all, delete-orphan",
+    )

@@ -1,13 +1,11 @@
 # Business logic (rules, validations, orchestration).
-
-from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.exceptions import BadRequestException
+from src.core.exceptions import BadRequestException, NotFoundException
+from src.core.utils.auth import create_access_token, create_refresh_token
+from src.core.utils.hashing import bcrypt_context
 
 from . import repository, schemas
-
-bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def register_user(db: AsyncSession, user: schemas.RegisterRequest):
@@ -15,4 +13,35 @@ async def register_user(db: AsyncSession, user: schemas.RegisterRequest):
     if db_user:
         raise BadRequestException("Email already registered")
     hashed_password = bcrypt_context.hash(user.password)
-    return await repository.create_user(db, user, hashed_password)
+    db_user = await repository.create_user(db, user, hashed_password)
+    user_read = schemas.UserRead.model_validate(db_user)
+    access_token = create_access_token({"uid": str(db_user.id)})
+    refresh_token = create_refresh_token({"uid": str(db_user.id)})
+    return schemas.RegisterResponse(
+        user=user_read,
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
+
+
+async def get_user_by_id(db: AsyncSession, user_id: int):
+    db_user = await repository.get_user_by_id(db, user_id)
+    if not db_user:
+        raise NotFoundException("No user found")
+    return schemas.UserResponse.model_validate(db_user)
+
+
+async def login_user(db: AsyncSession, user_login: schemas.LoginRequest):
+    db_user = await repository.get_user_by_email(db, email=user_login.email)
+    if not db_user or not bcrypt_context.verify(
+        user_login.password, db_user.hashed_password
+    ):
+        raise BadRequestException("Invalid email or password")
+    user_read = schemas.UserRead.model_validate(db_user)
+    access_token = create_access_token({"uid": str(db_user.id)})
+    refresh_token = create_refresh_token({"uid": str(db_user.id)})
+    return schemas.LoginResponse(
+        user=user_read,
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
