@@ -1,4 +1,4 @@
-# to run the project
+# EXPENSE TRACKER API
 
 ### pre requisites :
 
@@ -8,6 +8,7 @@
 
 ### Commands to run project at the beginning :
 
+- docker compose up -d => at the directory
 - uv sync
 - uv run uvicorn main:app --reload
 
@@ -31,6 +32,21 @@ Controllers = handle requests.
 Services = define business rules.
 Repositories = talk to DB.
 Models = represent data.
+
+## formatter,linter and extension config
+
+- install ruff extension in vsc
+- put this in settings.json :
+  ```json
+  "[python]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "charliermarsh.ruff",
+      "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+      }
+  }
+  ```
 
 ### Database
 

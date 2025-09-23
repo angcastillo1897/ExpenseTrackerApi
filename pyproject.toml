@@ -5,12 +5,32 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "alembic>=1.16.5",
-    "asyncpg>=0.30.0",
-    "fastapi[standard]>=0.116.1",
-    "gunicorn>=23.0.0",
-    "passlib>=1.7.4",
-    "psycopg2>=2.9.10",
-    "pydantic-settings>=2.10.1",
-    "sqlalchemy[asyncio]>=2.0.43",
+    "alembic>=1.16,<1.17",
+    "asyncpg>=0.30,<0.31",
+    "fastapi[standard]>=0.116,<0.117",
+    "gunicorn>=23.0,<24.0",
+    "passlib>=1.7,<1.8",
+    "psycopg2>=2.9,<2.10",
+    "pydantic-settings>=2.10,<2.11",
+    "sqlalchemy[asyncio]>=2.0,<2.1",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.13.1",
+]
+
+
+[tool.ruff]
+line-length = 88           # same as Black default
+target-version = "py312"   # since you’re on Python 3.12
+fix = true                 # auto-fix lint errors when possible
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]   # E: pycodestyle, F: pyflakes, I: isort
+ignore = ["E501"]          # optional: ignore line-length (Black/formatter will handle)
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
