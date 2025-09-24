@@ -1,4 +1,13 @@
 # Presentation layer (HTTP routes, request/response handling).
+#! TODO
+# GET /user/profile or GET /user/me - Get current user info
+# PUT /user/profile - Update user profile
+# PATCH /user/profile - Partial profile updates
+# POST /user/change-password - Change password (requires current password)
+# GET /user/sessions - List active sessions/devices
+# DELETE /user/sessions/{session_id} - Revoke specific session
+
+
 from fastapi import APIRouter, status
 
 from src.core.dependencies.async_bd import AsyncSessionDepends
@@ -23,3 +32,8 @@ async def login_user(login: schemas.LoginRequest, db: AsyncSessionDepends):
 @router.get("/{user_id}", response_model=schemas.UserResponse)
 async def get_user(user_id: int, db: AsyncSessionDepends):
     return await service.get_user_by_id(db, user_id)
+
+
+@router.post("/refresh", response_model=schemas.RefreshResponse)
+async def refresh_token(refresh: schemas.RefreshRequest):
+    return await service.refresh_access_token(refresh)

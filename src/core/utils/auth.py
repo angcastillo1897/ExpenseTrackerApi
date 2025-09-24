@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 
+from src.core.exceptions import UnAuthorizedException
 from src.settings import settings
 
 
@@ -30,6 +31,6 @@ def verify_token(token: str):
         )
         return payload
     except jwt.ExpiredSignatureError:
-        return Exception("Token has expired")
+        raise UnAuthorizedException("Token has expired")
     except jwt.InvalidTokenError:
-        return Exception("Invalid token")
+        raise UnAuthorizedException("Invalid token")
