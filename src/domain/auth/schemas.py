@@ -1,17 +1,7 @@
 # DTOs / validation (Pydantic).
-
-from datetime import datetime
-
 from pydantic import BaseModel, EmailStr
 
-
-class UserRead(BaseModel):
-    id: int
-    email: EmailStr
-    full_name: str
-
-    class Config:
-        from_attributes = True
+from src.domain.users.schemas import UserSerializer
 
 
 class RegisterRequest(BaseModel):
@@ -22,22 +12,9 @@ class RegisterRequest(BaseModel):
 
 
 class RegisterResponse(BaseModel):
-    user: UserRead
+    user: UserSerializer
     access_token: str
     refresh_token: str
-
-
-class UserResponse(BaseModel):
-    id: int
-    email: EmailStr
-    first_name: str
-    last_name: str
-    full_name: str
-    is_active: bool
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class LoginRequest(BaseModel):
@@ -46,7 +23,7 @@ class LoginRequest(BaseModel):
 
 
 class LoginResponse(BaseModel):
-    user: UserResponse
+    user: UserSerializer
     access_token: str
     refresh_token: str
 
@@ -57,4 +34,8 @@ class RefreshRequest(BaseModel):
 
 class RefreshResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
+    token_type: str = "Bearer"
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr

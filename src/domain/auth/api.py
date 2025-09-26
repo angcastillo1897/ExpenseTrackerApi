@@ -11,7 +11,7 @@ from src.core.dependencies.async_bd import AsyncSessionDepends
 
 from . import schemas, service
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post(
@@ -24,10 +24,24 @@ async def auth_register(user: schemas.RegisterRequest, db: AsyncSessionDepends):
 
 
 @router.post("/login", response_model=schemas.LoginResponse)
-async def login_user(user_credentials: schemas.LoginRequest, db: AsyncSessionDepends):
-    return await service.login_user(db, user_credentials)
+async def auth_login(user_credentials: schemas.LoginRequest, db: AsyncSessionDepends):
+    return await service.auth_login(db, user_credentials)
 
 
 @router.post("/refresh", response_model=schemas.RefreshResponse)
-async def refresh_token(refresh: schemas.RefreshRequest):
+async def auth_refresh_token(refresh: schemas.RefreshRequest):
     return await service.refresh_access_token(refresh)
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def auth_logout():
+    #!!! Optionally: invalidate the refresh token in your DB/session store
+    # For stateless JWT, just respond OK and let client delete tokens
+    return {"message": "Logged out successfully"}
+
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+async def auth_forgot_password(
+    request: schemas.ForgotPasswordRequest, db: AsyncSessionDepends
+):
+    return await service.forgot_password(db, request)

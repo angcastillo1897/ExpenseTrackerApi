@@ -8,32 +8,16 @@
 # DELETE /user/sessions/{session_id} - Revoke specific session
 
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter
 
 from src.core.dependencies.async_bd import AsyncSessionDepends
+from src.core.dependencies.auth_user import AuthUserDepends
 
 from . import schemas, service
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/user", tags=["User"])
 
 
-@router.post(
-    "/", response_model=schemas.RegisterResponse, status_code=status.HTTP_201_CREATED
-)
-async def register_user(user: schemas.RegisterRequest, db: AsyncSessionDepends):
-    return await service.register_user(db, user)
-
-
-@router.post("/login", response_model=schemas.LoginResponse)
-async def login_user(login: schemas.LoginRequest, db: AsyncSessionDepends):
-    return await service.login_user(db, login)
-
-
-@router.get("/{user_id}", response_model=schemas.UserResponse)
-async def get_user(user_id: int, db: AsyncSessionDepends):
-    return await service.get_user_by_id(db, user_id)
-
-
-@router.post("/refresh", response_model=schemas.RefreshResponse)
-async def refresh_token(refresh: schemas.RefreshRequest):
-    return await service.refresh_access_token(refresh)
+@router.get("/profile", response_model=schemas.UserSerializer)
+async def get_user_profile(user: AuthUserDepends, db: AsyncSessionDepends):
+    return await service.get_user_profile(db, user.id)

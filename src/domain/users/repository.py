@@ -3,16 +3,13 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from . import models, schemas
+from src.domain.auth import schemas as auth_schemas
 
-
-async def get_user_by_email(db: AsyncSession, email: str):
-    result = await db.execute(select(models.User).where(models.User.email == email))
-    return result.scalar_one_or_none()
+from . import models
 
 
 async def create_user(
-    db: AsyncSession, user: schemas.RegisterRequest, hashed_password: str
+    db: AsyncSession, user: auth_schemas.RegisterRequest, hashed_password: str
 ):
     db_user = models.User(
         email=user.email,
@@ -24,6 +21,11 @@ async def create_user(
     await db.commit()
     await db.refresh(db_user)
     return db_user
+
+
+async def get_user_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(models.User).where(models.User.email == email))
+    return result.scalar_one_or_none()
 
 
 async def get_user_by_id(db: AsyncSession, user_id: int):
