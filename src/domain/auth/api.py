@@ -5,7 +5,7 @@
 # POST /auth/logout - Single session logout
 # POST /auth/forgot-password - Password reset request
 # POST /auth/reset-password - Complete password reset
-from fastapi import APIRouter, status
+from fastapi import APIRouter, BackgroundTasks, status
 
 from src.core.dependencies.async_bd import AsyncSessionDepends
 
@@ -19,8 +19,12 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
     response_model=schemas.RegisterResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def auth_register(user: schemas.RegisterRequest, db: AsyncSessionDepends):
-    return await service.auth_register(db, user)
+async def auth_register(
+    user: schemas.RegisterRequest,
+    db: AsyncSessionDepends,
+    background_tasks: BackgroundTasks,
+):
+    return await service.auth_register(db, user, background_tasks)
 
 
 @router.post("/login", response_model=schemas.LoginResponse)

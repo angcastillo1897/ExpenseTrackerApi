@@ -1,8 +1,10 @@
 # Business logic (rules, validations, orchestration).
+from fastapi import BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.exceptions import BadRequestException
 from src.core.utils.hashing import bcrypt_context
+from src.core.utils.mailer import send_email
 from src.core.utils.token import (
     create_access_token,
     create_refresh_token,
@@ -13,13 +15,27 @@ from src.domain.users import repository as user_repository
 from . import schemas
 
 
-async def auth_register(db: AsyncSession, user: schemas.RegisterRequest):
+async def auth_register(
+    db: AsyncSession, user: schemas.RegisterRequest, background_tasks: BackgroundTasks
+):
     db_user = await user_repository.get_user_by_email(db, email=user.email)
     if db_user:
         raise BadRequestException("Email already registered")
     hashed_password = bcrypt_context.hash(user.password)
     db_user = await user_repository.create_user(db, user, hashed_password)
     user = schemas.UserSerializer.model_validate(db_user)
+
+    # Send welcome email as brackground task
+    # ? in future, consider using a task queue like Celery with redis for better scalability
+    background_tasks.add_task(
+        send_email,
+        to_email=user.email,
+        subject="Welcome to Expense Tracker 🎉",
+        template_name="welcome_email.html",
+        username=user.first_name,
+        email=user.email,
+    )
+
     access_token = create_access_token({"sub": str(db_user.id)})
     refresh_token = create_refresh_token({"sub": str(db_user.id)})
     return schemas.RegisterResponse(
