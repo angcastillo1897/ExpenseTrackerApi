@@ -65,6 +65,7 @@ Models = represent data.
 
    User registration and login (email, Google, Apple)
    Password reset and account recovery
+   Refresh tokens with rotated strategy
    Two-factor authentication (optional)
 
 2. Expense & Income Management
@@ -163,3 +164,23 @@ Models = represent data.
 
     Themes and layout customizations
     Widget support for quick entry or overview
+
+# Authentication Tokens strategy
+
+Access Token (Stateless)
+├── Never stored in DB
+├── Verified by signature
+├── Short-lived (15-30 min)
+└── Used for API requests
+
+Refresh Token (Stateful)
+├── Stored in DB (hashed)
+├── Long-lived (7-30 days)
+├── Can be revoked
+└── Used only for token refresh
+
+Reset Token (Stateful)
+├── Stored in DB
+├── Very short-lived (15 min)
+├── One-time use
+└── Used only for password reset

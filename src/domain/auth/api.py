@@ -5,7 +5,7 @@
 # POST /auth/logout - Single session logout
 # POST /auth/forgot-password - Password reset request
 # POST /auth/reset-password - Complete password reset
-from fastapi import APIRouter, BackgroundTasks, status
+from fastapi import APIRouter, BackgroundTasks, Request, status
 
 from src.core.dependencies.async_bd import AsyncSessionDepends
 
@@ -23,18 +23,25 @@ async def auth_register(
     user: schemas.RegisterRequest,
     db: AsyncSessionDepends,
     background_tasks: BackgroundTasks,
+    http_request: Request,
 ):
-    return await service.auth_register(db, user, background_tasks)
+    return await service.auth_register(db, user, background_tasks, http_request)
 
 
 @router.post("/login", response_model=schemas.LoginResponse)
-async def auth_login(user_credentials: schemas.LoginRequest, db: AsyncSessionDepends):
-    return await service.auth_login(db, user_credentials)
+async def auth_login(
+    user_credentials: schemas.LoginRequest,
+    db: AsyncSessionDepends,
+    http_request: Request,
+):
+    return await service.auth_login(db, user_credentials, http_request)
 
 
-@router.post("/refresh", response_model=schemas.RefreshResponse)
-async def auth_refresh_token(refresh: schemas.RefreshRequest):
-    return await service.refresh_access_token(refresh)
+@router.post("/refresh", response_model=schemas.TokensBase)
+async def auth_refresh_token(
+    refresh: schemas.RefreshRequest, db: AsyncSessionDepends, http_request: Request
+):
+    return await service.refresh_access_token(db, refresh, http_request)
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
