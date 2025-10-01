@@ -1,8 +1,8 @@
 #! TODO
-# POST /auth/register - User registration
-# POST /auth/login - User authentication
-# POST /auth/refresh - Token refresh
-# POST /auth/logout - Single session logout
+# POST /auth/register - User registration *
+# POST /auth/login - User authentication  *
+# POST /auth/refresh - Token refresh      *
+# POST /auth/logout - Single session logout *
 # POST /auth/forgot-password - Password reset request
 # POST /auth/reset-password - Complete password reset
 from fastapi import APIRouter, BackgroundTasks, Request, status
@@ -45,14 +45,12 @@ async def auth_refresh_token(
 
 
 @router.post("/logout", status_code=status.HTTP_200_OK)
-async def auth_logout():
-    #!!! Optionally: invalidate the refresh token in your DB/session store
-    # For stateless JWT, just respond OK and let client delete tokens
-    return {"message": "Logged out successfully"}
+async def auth_logout(request: schemas.LogoutRequest, db: AsyncSessionDepends):
+    return await service.auth_logout(db, request)
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
 async def auth_forgot_password(
     request: schemas.ForgotPasswordRequest, db: AsyncSessionDepends
 ):
-    return await service.forgot_password(db, request)
+    return await service.auth_forgot_password(db, request)

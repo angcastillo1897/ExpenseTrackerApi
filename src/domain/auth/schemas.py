@@ -51,6 +51,8 @@ class RefreshRequest(BaseModel):
 # class RefreshResponse(BaseModel):
 #     access_token: str
 #     token_type: str = "Bearer"
+class LogoutRequest(BaseModel):
+    refresh_token: str
 
 
 class ForgotPasswordRequest(BaseModel):

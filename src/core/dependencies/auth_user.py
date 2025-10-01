@@ -7,7 +7,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.core.dependencies.async_bd import AsyncSessionDepends
 from src.core.exceptions import ForbiddenException, UnAuthorizedException
-from src.core.utils.token import verify_token
+from src.core.utils.token import verify_jwt_token
 from src.domain.users import repository as user_repository
 from src.domain.users.schemas import UserSerializer
 
@@ -27,7 +27,7 @@ async def get_current_user(
     try:
         token = credentials.credentials
 
-        payload = verify_token(token)
+        payload = verify_jwt_token(token)
 
         # Extract user_id from token payload
         user_id: int = int(payload.get("sub"))

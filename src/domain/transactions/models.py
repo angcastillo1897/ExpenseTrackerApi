@@ -26,11 +26,13 @@ class Transaction(Base):
     )
     amount: Mapped[float] = mapped_column(Float, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(String(400), nullable=True)
-    date: Mapped[datetime] = mapped_column(DateTime, default=func.now())
+    date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     is_recurring: Mapped[bool] = mapped_column(default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=func.now()
+    )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=func.now(), onupdate=func.now()
+        DateTime(timezone=True), default=func.now(), onupdate=func.now()
     )
 
     # Relationships

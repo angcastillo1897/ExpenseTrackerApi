@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     HASH_ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYS: int
+    RESET_TOKEN_EXPIRE_MINUTES: int
     MAIL_HOST: str
     MAIL_PORT: int
     MAIL_USERNAME: str
