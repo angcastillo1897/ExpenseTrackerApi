@@ -26,14 +26,17 @@ def generate_refresh_token() -> str:
     return secrets.token_urlsafe(32)
 
 
-#! TODO : IMPROVE
-def generate_password_reset_token() -> str:
+def generate_password_reset_token(
+    user_id: int,
+) -> auth_schemas.CreatePasswordResetToken:
     password_reset_token = generate_refresh_token()
     password_reset_token_hash = hash_token(password_reset_token)
     expires_at = datetime.now(timezone.utc) + timedelta(
         days=settings.RESET_TOKEN_EXPIRE_MINUTES
     )
-    return
+    return auth_schemas.CreatePasswordResetToken(
+        user_id=user_id, token_hash=password_reset_token_hash, expires_at=expires_at
+    )
 
 
 def prepare_refresh_token_creation(

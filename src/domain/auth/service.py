@@ -1,5 +1,7 @@
 # Business logic (rules, validations, orchestration).
 
+from datetime import datetime, timezone
+
 from fastapi import BackgroundTasks, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +11,7 @@ from src.core.utils.hashing import get_password_hash, verify_password
 from src.core.utils.mailer import send_email
 from src.core.utils.token import (
     create_access_token,
+    generate_password_reset_token,
     prepare_refresh_token_creation,
 )
 from src.core.utils.user_extra_info import get_user_ip
@@ -164,19 +167,64 @@ async def auth_logout(db: AsyncSession, request: schemas.LogoutRequest):
 
 
 async def auth_forgot_password(
-    db: AsyncSession, request: schemas.ForgotPasswordRequest
+    db: AsyncSession,
+    request: schemas.ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
 ):
     db_user = await user_repository.get_user_by_email(db, email=request.email)
     if not db_user or not db_user.is_active:
         # For security, do not reveal if email is registered
         return {"message": "If the email is registered, a reset link has been sent."}
 
-    #!!! TODO:  Here you would generate a password reset token and send an email
-    password_reset_token = generate_refresh_token()
-    password_reset_token_hash = hash_token(password_reset_token)
-    expires_at = datetime.now(timezone.utc) + timedelta(
-        days=settings.RESET_TOKEN_EXPIRE_MINUTES
-    )
-    # For simplicity, we'll skip email sending and just return a message
+    password_reset_token_data = generate_password_reset_token(user_id=db_user.id)
+    await auth_repository.create_reset_password_token(db, password_reset_token_data)
 
-    return {"message": "If the email is registered, a reset link has been sent."}
+    # ? send email with reset link
+    reset_link = f"https://your-frontend-app.com/reset-password?token={password_reset_token_data.token_hash}"
+    user = schemas.UserSerializer.model_validate(db_user)
+    # Send welcome email as brackground task
+    # ? in future, consider using a task queue like Celery with redis for better scalability
+    # background_tasks.add_task(
+    #     send_email,
+    #     to_email=user.email,
+    #     subject="Reset password for Expense Tracker App",
+    #     template_name="reset_password.html",
+    #     username=user.first_name,
+    #     reset_link=reset_link,
+    # )
+
+    return {
+        "message": "If the email is registered, a reset link has been sent.",
+        "reset_link": reset_link,
+        "user": user,
+    }
+
+
+async def auth_validate_reset_password_token(db: AsyncSession, token: str):
+    user_reset_token_db = await user_repository.get_user_by_reset_password_token(
+        db, token
+    )
+    print(user_reset_token_db)
+
+    if user_reset_token_db:
+        # Calculate remaining time
+        expires_at = user_reset_token_db["expires_at"]
+        now = datetime.now(timezone.utc)
+
+        time_remaining = expires_at - now
+
+        if time_remaining.total_seconds() <= 0:
+            return {"message": "Token has expired."}
+
+        # Round UP minutes
+        minutes_remaining = int((time_remaining.total_seconds() + 59) // 60)
+        #!!!! FIXXX
+        return {
+            "message": "Token is valid.",
+            "expires_in_minutes": minutes_remaining,
+        }
+
+    else:
+        raise BadRequestException(
+            "Invalid or expired reset token. Please request a new password reset."
+        )

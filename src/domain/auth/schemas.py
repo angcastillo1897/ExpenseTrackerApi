@@ -43,6 +43,12 @@ class CreateRefreshToken(BaseModel):
     expires_at: datetime
 
 
+class CreatePasswordResetToken(BaseModel):
+    user_id: int
+    token_hash: str
+    expires_at: datetime
+
+
 class RefreshRequest(BaseModel):
     refresh_token: str
     device_info: Optional[str] = None

@@ -3,8 +3,9 @@
 # POST /auth/login - User authentication  *
 # POST /auth/refresh - Token refresh      *
 # POST /auth/logout - Single session logout *
-# POST /auth/forgot-password - Password reset request
+# POST /auth/forgot-password - Password reset request *
 # POST /auth/reset-password - Complete password reset
+# POST /auth/validate-reset-token/{token} - Validate password reset token
 from fastapi import APIRouter, BackgroundTasks, Request, status
 
 from src.core.dependencies.async_bd import AsyncSessionDepends
@@ -51,6 +52,16 @@ async def auth_logout(request: schemas.LogoutRequest, db: AsyncSessionDepends):
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
 async def auth_forgot_password(
-    request: schemas.ForgotPasswordRequest, db: AsyncSessionDepends
+    request: schemas.ForgotPasswordRequest,
+    db: AsyncSessionDepends,
+    background_tasks: BackgroundTasks,
 ):
-    return await service.auth_forgot_password(db, request)
+    return await service.auth_forgot_password(db, request, background_tasks)
+
+
+@router.post("/validate-reset-password-token", status_code=status.HTTP_200_OK)
+async def auth_validate_reset_password_token(
+    token: str,
+    db: AsyncSessionDepends,
+):
+    return await service.auth_validate_reset_password_token(db, token)

@@ -114,3 +114,15 @@ async def invalidate_token(db: AsyncSession, token_id: int) -> None:
         .values(is_active=False)
     )
     await db.commit()
+
+
+async def create_reset_password_token(
+    db: AsyncSession, reset_password_token_data: auth_schemas.CreatePasswordResetToken
+):
+    db_reset_password_token = models.PasswordResetToken(
+        **reset_password_token_data.model_dump()
+    )
+    db.add(db_reset_password_token)
+    await db.commit()
+    await db.refresh(db_reset_password_token)
+    return db_reset_password_token
