@@ -201,6 +201,7 @@ async def auth_forgot_password(
 
 
 async def auth_validate_reset_password_token(db: AsyncSession, token: str):
+    """if response is 200, show reset password form with time remaining to reset password"""
     user_reset_token_db = await user_repository.get_user_by_reset_password_token(
         db, token
     )
@@ -218,7 +219,6 @@ async def auth_validate_reset_password_token(db: AsyncSession, token: str):
 
         # Round UP minutes
         minutes_remaining = int((time_remaining.total_seconds() + 59) // 60)
-        #!!!! FIXXX
         return {
             "message": "Token is valid.",
             "expires_in_minutes": minutes_remaining,
@@ -228,3 +228,33 @@ async def auth_validate_reset_password_token(db: AsyncSession, token: str):
         raise BadRequestException(
             "Invalid or expired reset token. Please request a new password reset."
         )
+
+
+async def auth_reset_password(db: AsyncSession, request: schemas.ResetPasswordRequest):
+    user_reset_token_db = await user_repository.get_user_by_reset_password_token(
+        db, request.token
+    )
+
+    if not user_reset_token_db:
+        raise BadRequestException(
+            "Invalid or expired reset token. Please request a new password reset."
+        )
+
+    if len(request.new_password) < 8:
+        raise BadRequestException("Password must be at least 8 characters long")
+
+    # Update user's password
+    hashed_password = get_password_hash(request.new_password)
+    await user_repository.update_user_password(
+        db, user_id=user_reset_token_db["user_id"], new_hashed_password=hashed_password
+    )
+
+    # Invalidate the used reset token
+    await auth_repository.invalidate_reset_password_token(db, request.token)
+
+    # invalidate all existing refresh tokens for the user (force logout from all devices)
+    await auth_repository.invalidate_all_user_refresh_tokens(
+        db, user_reset_token_db["user_id"]
+    )
+
+    return {"message": "Password has been reset successfully."}

@@ -51,7 +51,7 @@ async def current_device_active_refresh_token(
         .where(
             models.RefreshToken.user_id == user_id,
             models.RefreshToken.device_info == device_info,
-            models.RefreshToken.is_active,
+            models.RefreshToken.is_active == True,
             models.RefreshToken.expires_at > datetime.now(timezone.utc),
         )
         .order_by(models.RefreshToken.last_used.desc())
@@ -81,7 +81,7 @@ async def get_refresh_token_from_db(db: AsyncSession, token_hash: str):
     result = await db.execute(
         select(models.RefreshToken).where(
             models.RefreshToken.token_hash == token_hash,
-            models.RefreshToken.is_active,
+            models.RefreshToken.is_active == True,
             models.RefreshToken.expires_at > datetime.now(timezone.utc),
         )
     )
@@ -126,3 +126,21 @@ async def create_reset_password_token(
     await db.commit()
     await db.refresh(db_reset_password_token)
     return db_reset_password_token
+
+
+async def invalidate_reset_password_token(db: AsyncSession, token: str) -> None:
+    await db.execute(
+        update(models.PasswordResetToken)
+        .where(models.PasswordResetToken.token_hash == token)
+        .values(is_used=True)
+    )
+    await db.commit()
+
+
+async def invalidate_all_user_refresh_tokens(db: AsyncSession, user_id: int) -> None:
+    await db.execute(
+        update(models.RefreshToken)
+        .where(models.RefreshToken.user_id == user_id)
+        .values(is_active=False)
+    )
+    await db.commit()

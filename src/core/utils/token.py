@@ -32,7 +32,7 @@ def generate_password_reset_token(
     password_reset_token = generate_refresh_token()
     password_reset_token_hash = hash_token(password_reset_token)
     expires_at = datetime.now(timezone.utc) + timedelta(
-        days=settings.RESET_TOKEN_EXPIRE_MINUTES
+        minutes=settings.RESET_TOKEN_EXPIRE_MINUTES
     )
     return auth_schemas.CreatePasswordResetToken(
         user_id=user_id, token_hash=password_reset_token_hash, expires_at=expires_at

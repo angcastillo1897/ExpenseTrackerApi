@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.auth import models as auth_models
@@ -49,6 +49,7 @@ async def get_user_by_reset_password_token(db: AsyncSession, token: str):
         .where(
             auth_models.PasswordResetToken.token_hash == token,
             auth_models.PasswordResetToken.expires_at > datetime.now(timezone.utc),
+            auth_models.PasswordResetToken.is_used == False,
         )
         .limit(1)
     )
@@ -61,3 +62,14 @@ async def get_user_by_reset_password_token(db: AsyncSession, token: str):
         }
 
     return None
+
+
+async def update_user_password(
+    db: AsyncSession, user_id: int, new_hashed_password: str
+):
+    await db.execute(
+        update(user_models.User)
+        .where(user_models.User.id == user_id)
+        .values(hashed_password=new_hashed_password)
+    )
+    await db.commit()
