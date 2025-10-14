@@ -15,8 +15,8 @@ class Category(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(100))
-    type: Mapped[str] = mapped_column(
-        Enum("income", "expense", name="category_type"), nullable=False
+    transaction_type: Mapped[str] = mapped_column(
+        Enum("income", "expense", name="transaction_type"), nullable=False
     )
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),

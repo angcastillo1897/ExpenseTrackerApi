@@ -13,11 +13,11 @@ from fastapi import APIRouter
 from src.core.dependencies.async_bd import AsyncSessionDepends
 from src.core.dependencies.auth_user import AuthUserDepends
 
-from . import schemas, service
+from . import service, types
 
 router = APIRouter(prefix="/user", tags=["User"])
 
 
-@router.get("/profile", response_model=schemas.UserSerializer)
+@router.get("/profile", response_model=types.UserSerializer)
 async def get_user_profile(user: AuthUserDepends, db: AsyncSessionDepends):
     return await service.get_user_profile(db, user.id)

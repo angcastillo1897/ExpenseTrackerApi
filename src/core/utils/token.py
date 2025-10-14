@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 
 from src.core.exceptions import UnAuthorizedException
-from src.domain.auth import schemas as auth_schemas
+from src.domain.auth import types as auth_types
 from src.settings import settings
 
 
@@ -28,27 +28,27 @@ def generate_refresh_token() -> str:
 
 def generate_password_reset_token(
     user_id: int,
-) -> auth_schemas.CreatePasswordResetToken:
+) -> auth_types.CreatePasswordResetToken:
     password_reset_token = generate_refresh_token()
     password_reset_token_hash = hash_token(password_reset_token)
     expires_at = datetime.now(timezone.utc) + timedelta(
         minutes=settings.RESET_TOKEN_EXPIRE_MINUTES
     )
-    return auth_schemas.CreatePasswordResetToken(
+    return auth_types.CreatePasswordResetToken(
         user_id=user_id, token_hash=password_reset_token_hash, expires_at=expires_at
     )
 
 
 def prepare_refresh_token_creation(
     user_id: int, device_info: str = None, ip_address: str = None
-) -> auth_schemas.CreateRefreshToken:
+) -> auth_types.CreateRefreshToken:
     refresh_token = generate_refresh_token()
     refresh_token_hash = hash_token(refresh_token)
     expires_at = datetime.now(timezone.utc) + timedelta(
         days=settings.REFRESH_TOKEN_EXPIRE_DAYS
     )
 
-    refresh_token_data = auth_schemas.CreateRefreshToken(
+    refresh_token_data = auth_types.CreateRefreshToken(
         user_id=user_id,
         token_hash=refresh_token_hash,
         device_info=device_info,

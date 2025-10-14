@@ -4,13 +4,13 @@ from datetime import datetime, timezone
 from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.domain.auth import schemas as auth_schemas
+from src.domain.auth import types as auth_types
 
 from . import models
 
 
 async def create_refresh_token(
-    db: AsyncSession, refresh_token_data: auth_schemas.CreateRefreshToken
+    db: AsyncSession, refresh_token_data: auth_types.CreateRefreshToken
 ):
     db_refresh_token = models.RefreshToken(**refresh_token_data.model_dump())
     db.add(db_refresh_token)
@@ -91,7 +91,7 @@ async def get_refresh_token_from_db(db: AsyncSession, token_hash: str):
 async def update_refresh_token(
     db: AsyncSession,
     old_refresh_token_id: int,
-    new_refresh_token_data: auth_schemas.CreateRefreshToken,
+    new_refresh_token_data: auth_types.CreateRefreshToken,
 ) -> None:
     await db.execute(
         update(models.RefreshToken)
@@ -117,7 +117,7 @@ async def invalidate_token(db: AsyncSession, token_id: int) -> None:
 
 
 async def create_reset_password_token(
-    db: AsyncSession, reset_password_token_data: auth_schemas.CreatePasswordResetToken
+    db: AsyncSession, reset_password_token_data: auth_types.CreatePasswordResetToken
 ):
     db_reset_password_token = models.PasswordResetToken(
         **reset_password_token_data.model_dump()

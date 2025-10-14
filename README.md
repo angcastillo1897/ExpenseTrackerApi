@@ -64,8 +64,8 @@ Models = represent data.
 1. User Authentication & Security
 
    User registration and login (email, Google, Apple)
-   Password reset and account recovery
-   Refresh tokens with rotated strategy
+   Password reset and account recovery DONE
+   Refresh tokens with rotated strategy DONE
    Two-factor authentication (optional)
 
 2. Expense & Income Management

@@ -18,12 +18,12 @@ from src.core.utils.user_extra_info import get_user_ip
 from src.domain.auth import repository as auth_repository
 from src.domain.users import repository as user_repository
 
-from . import schemas
+from . import types
 
 
 async def auth_register(
     db: AsyncSession,
-    user_request: schemas.RegisterRequest,
+    user_request: types.RegisterRequest,
     background_tasks: BackgroundTasks,
     http_request: Request,
 ):
@@ -32,7 +32,7 @@ async def auth_register(
         raise BadRequestException("Email already registered")
     hashed_password = get_password_hash(user_request.password)
     db_user = await user_repository.create_user(db, user_request, hashed_password)
-    user = schemas.UserSerializer.model_validate(db_user)
+    user = types.UserSerializer.model_validate(db_user)
 
     # Send welcome email as brackground task
     # ? in future, consider using a task queue like Celery with redis for better scalability
@@ -69,7 +69,7 @@ async def auth_register(
 
     await auth_repository.create_refresh_token(db, refresh_token_data)
 
-    return schemas.RegisterResponse(
+    return types.RegisterResponse(
         user=user,
         access_token=access_token,
         refresh_token=refresh_token_data.token_hash,
@@ -77,12 +77,12 @@ async def auth_register(
 
 
 async def auth_login(
-    db: AsyncSession, user_login: schemas.LoginRequest, http_request: Request
+    db: AsyncSession, user_login: types.LoginRequest, http_request: Request
 ):
     db_user = await user_repository.get_user_by_email(db, email=user_login.email)
     if not db_user or not verify_password(user_login.password, db_user.hashed_password):
         raise BadRequestException("Invalid email or password")
-    user = schemas.UserSerializer.model_validate(db_user)
+    user = types.UserSerializer.model_validate(db_user)
     access_token = create_access_token({"sub": str(user.id)})
 
     ip_address = get_user_ip(http_request)
@@ -111,7 +111,7 @@ async def auth_login(
     # Clean up old expired tokens (lazy cleanup)
     await auth_repository.delete_user_expired_tokens(db, user.id)
 
-    return schemas.LoginResponse(
+    return types.LoginResponse(
         user=user,
         access_token=access_token,
         refresh_token=refresh_token_data.token_hash,
@@ -119,7 +119,7 @@ async def auth_login(
 
 
 async def refresh_access_token(
-    db: AsyncSession, refresh_request: schemas.RefreshRequest, http_request: Request
+    db: AsyncSession, refresh_request: types.RefreshRequest, http_request: Request
 ):
     token_hash = refresh_request.refresh_token
     # Get and validate refresh token from DB
@@ -151,12 +151,12 @@ async def refresh_access_token(
         new_refresh_token_data=new_refresh_token_data,
     )
 
-    return schemas.TokensBase(
+    return types.TokensBase(
         access_token=access_token, refresh_token=new_refresh_token_data.token_hash
     )
 
 
-async def auth_logout(db: AsyncSession, request: schemas.LogoutRequest):
+async def auth_logout(db: AsyncSession, request: types.LogoutRequest):
     db_token = await auth_repository.get_refresh_token_from_db(
         db, request.refresh_token
     )
@@ -168,7 +168,7 @@ async def auth_logout(db: AsyncSession, request: schemas.LogoutRequest):
 
 async def auth_forgot_password(
     db: AsyncSession,
-    request: schemas.ForgotPasswordRequest,
+    request: types.ForgotPasswordRequest,
     background_tasks: BackgroundTasks,
 ):
     db_user = await user_repository.get_user_by_email(db, email=request.email)
@@ -181,7 +181,7 @@ async def auth_forgot_password(
 
     # ? send email with reset link
     reset_link = f"https://your-frontend-app.com/reset-password?token={password_reset_token_data.token_hash}"
-    user = schemas.UserSerializer.model_validate(db_user)
+    user = types.UserSerializer.model_validate(db_user)
     # Send welcome email as brackground task
     # ? in future, consider using a task queue like Celery with redis for better scalability
     # background_tasks.add_task(
@@ -230,7 +230,7 @@ async def auth_validate_reset_password_token(db: AsyncSession, token: str):
         )
 
 
-async def auth_reset_password(db: AsyncSession, request: schemas.ResetPasswordRequest):
+async def auth_reset_password(db: AsyncSession, request: types.ResetPasswordRequest):
     user_reset_token_db = await user_repository.get_user_by_reset_password_token(
         db, request.token
     )

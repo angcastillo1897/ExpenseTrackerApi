@@ -6,12 +6,12 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domain.auth import models as auth_models
-from src.domain.auth import schemas as auth_schemas
+from src.domain.auth import types as auth_types
 from src.domain.users import models as user_models
 
 
 async def create_user(
-    db: AsyncSession, user: auth_schemas.RegisterRequest, hashed_password: str
+    db: AsyncSession, user: auth_types.RegisterRequest, hashed_password: str
 ):
     db_user = user_models.User(
         email=user.email,

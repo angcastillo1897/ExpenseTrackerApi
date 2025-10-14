@@ -9,7 +9,7 @@ from src.core.dependencies.async_bd import AsyncSessionDepends
 from src.core.exceptions import ForbiddenException, UnAuthorizedException
 from src.core.utils.token import verify_jwt_token
 from src.domain.users import repository as user_repository
-from src.domain.users.schemas import UserSerializer
+from src.domain.users.types import UserSerializer
 
 # Security scheme to extract Bearer token
 security = HTTPBearer()

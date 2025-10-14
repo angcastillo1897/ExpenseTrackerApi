@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, func
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.utils.db_connection import Model as Base
@@ -28,6 +28,9 @@ class Transaction(Base):
     description: Mapped[Optional[str]] = mapped_column(String(400), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     is_recurring: Mapped[bool] = mapped_column(default=False)
+    transaction_type: Mapped[str] = mapped_column(
+        Enum("income", "expense", name="transaction_type"), nullable=False
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=func.now()
     )
