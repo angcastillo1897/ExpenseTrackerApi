@@ -17,6 +17,7 @@ from src.core.utils.token import (
 from src.core.utils.user_extra_info import get_user_ip
 from src.domain.auth import repository as auth_repository
 from src.domain.users import repository as user_repository
+from src.domain.users import types as user_types
 
 from . import types
 
@@ -32,7 +33,7 @@ async def auth_register(
         raise BadRequestException("Email already registered")
     hashed_password = get_password_hash(user_request.password)
     db_user = await user_repository.create_user(db, user_request, hashed_password)
-    user = types.UserSerializer.model_validate(db_user)
+    user = user_types.UserSerializer.model_validate(db_user)
 
     # Send welcome email as brackground task
     # ? in future, consider using a task queue like Celery with redis for better scalability
@@ -82,7 +83,7 @@ async def auth_login(
     db_user = await user_repository.get_user_by_email(db, email=user_login.email)
     if not db_user or not verify_password(user_login.password, db_user.hashed_password):
         raise BadRequestException("Invalid email or password")
-    user = types.UserSerializer.model_validate(db_user)
+    user = user_types.UserSerializer.model_validate(db_user)
     access_token = create_access_token({"sub": str(user.id)})
 
     ip_address = get_user_ip(http_request)
@@ -181,7 +182,7 @@ async def auth_forgot_password(
 
     # ? send email with reset link
     reset_link = f"https://your-frontend-app.com/reset-password?token={password_reset_token_data.token_hash}"
-    user = types.UserSerializer.model_validate(db_user)
+    user = user_types.UserSerializer.model_validate(db_user)
     # Send welcome email as brackground task
     # ? in future, consider using a task queue like Celery with redis for better scalability
     # background_tasks.add_task(
