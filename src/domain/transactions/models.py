@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.core.utils.db_connection import Model as Base
 
 if TYPE_CHECKING:
+    from src.domain.accounts.models import Account
     from src.domain.categories.models import Category
     from src.domain.users.models import User
 
@@ -24,7 +25,12 @@ class Transaction(Base):
         ForeignKey("categories.id", ondelete="CASCADE"),
         nullable=False,
     )
+    account_id: Mapped[int] = mapped_column(
+        ForeignKey("accounts.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     amount: Mapped[float] = mapped_column(Float, nullable=False)
+    currency: Mapped[str] = mapped_column(String(10), nullable=False, default="PEN")
     description: Mapped[Optional[str]] = mapped_column(String(400), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
     is_recurring: Mapped[bool] = mapped_column(default=False)
@@ -43,3 +49,4 @@ class Transaction(Base):
     category: Mapped["Category"] = relationship(
         "Category", back_populates="transactions"
     )
+    account: Mapped["Account"] = relationship("Account", back_populates="transactions")

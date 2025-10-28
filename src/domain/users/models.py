@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.core.utils.db_connection import Model as Base
 
 if TYPE_CHECKING:
+    from src.domain.accounts.models import Account
     from src.domain.auth.models import PasswordResetToken, RefreshToken
     from src.domain.categories.models import Category
     from src.domain.transactions.models import Transaction
@@ -52,6 +53,12 @@ class User(Base):
 
     password_reset_tokens: Mapped[list["PasswordResetToken"]] = relationship(
         "PasswordResetToken", back_populates="user", cascade="all, delete-orphan"
+    )
+
+    accounts: Mapped[list["Account"]] = relationship(
+        "Account",
+        back_populates="user",
+        cascade="all, delete-orphan",  # Delete accounts when user is deleted
     )
 
     @property

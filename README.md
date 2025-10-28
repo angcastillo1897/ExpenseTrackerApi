@@ -63,19 +63,19 @@ Models = represent data.
 
 1. User Authentication & Security
 
-   User registration and login (email, Google, Apple)
+   User registration and login (email DONE, Google, Apple)
    Password reset and account recovery DONE
    Refresh tokens with rotated strategy DONE
    Two-factor authentication (optional)
 
 2. Expense & Income Management
-   Add income or expense entries
-   Category selection (Food, Transport, Salary, etc.)
-   Amount
-   Date & time
-   Description or notes
+   Add income or expense entries DONE
+   Category selection (Food, Transport, Salary, etc.) DONE
+   Amount DONE
+   Date & time DONE
+   Description or notes DONE
    Recurring toggle (e.g., every month)
-   Edit/delete entries
+   Edit/delete entries DONE
    Attach receipt images or documents
 
 3. Dashboard & Summaries
@@ -85,7 +85,7 @@ Models = represent data.
    Calendar view of transactions
 
 4. Charts & Reports
-
+   Use Gifted Charts
    Pie charts (category-wise expenses)
    Bar/line charts (monthly trends)
    Filter by category/date
@@ -121,16 +121,16 @@ Models = represent data.
    Predict monthly expenses based on trends
    Suggest savings tips or budget adjustments
 
-10. Bank/Email/Notification Integration
+10. Bank/Email/Notification Integration (TO DO)
 
     Automatically fetch transactions from SMS, email (like BBVA or Yape), or bank APIs
     OCR for receipt scanning
 
-11. Voice Input or Speech-to-Text
+11. Voice Input or Speech-to-Text (TO DO)
 
     "Hey app, I spent 20 on groceries today" → Adds expense automatically
 
-12. Shared Wallets or Family Mode
+12. Shared Wallets or Family Mode (TO DO)
 
     Allow shared access to a wallet (e.g., for couples or roommates)
     Assign roles (viewer, editor)
@@ -140,7 +140,7 @@ Models = represent data.
     Earn badges for saving money
     Challenges like “No spend weekend” or “Save $100 this month”
 
-14. Offline Mode
+14. Offline Mode (TO DO)
 
     Add/edit transactions without internet
     Sync when reconnected
@@ -160,7 +160,7 @@ Models = represent data.
     Forecast next month's expenses and income
     Warning if future expenses exceed budget
 
-18. Dark Mode & Personalization
+18. Dark Mode & Personalization (TO DO)
 
     Themes and layout customizations
     Widget support for quick entry or overview
