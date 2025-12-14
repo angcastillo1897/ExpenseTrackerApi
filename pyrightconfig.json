@@ -1,0 +1,19 @@
+{
+  "typeCheckingMode": "strict",
+  "pythonVersion": "3.12",
+  "pythonPlatform": "All",
+
+  "venvPath": ".",
+  "venv": ".venv",
+
+  "include": ["src"],
+  "exclude": [
+    "**/__pycache__",
+    ".venv"
+  ],
+
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "reportUnusedImport": true,
+  "reportUnusedVariable": true
+}
