@@ -2,10 +2,12 @@ from datetime import datetime
 from typing import Annotated, Literal, Optional
 
 from fastapi import Depends
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from src.core.base_schema import CamelModel
 
 
-class TransactionCreateRequest(BaseModel):
+class TransactionCreateRequest(CamelModel):
     amount: float
     description: Optional[str] = None
     date: Optional[datetime] = None
@@ -16,7 +18,7 @@ class TransactionCreateRequest(BaseModel):
     account_id: int
 
 
-class TransactionUpdateRequest(BaseModel):
+class TransactionUpdateRequest(CamelModel):
     amount: Optional[float] = None
     description: Optional[str] = None
     date: Optional[datetime] = None
@@ -27,7 +29,7 @@ class TransactionUpdateRequest(BaseModel):
     account_id: Optional[int] = None
 
 
-class TransactionGetRequest(BaseModel):
+class TransactionGetRequest(CamelModel):
     filter_type: Literal["day", "week", "month", "year"] = Field(
         default="day",
         description="Filter by day, week, month, or year",

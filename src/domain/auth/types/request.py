@@ -1,9 +1,11 @@
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
+
+from src.core.base_schema import CamelModel
 
 
-class RegisterRequest(BaseModel):
+class RegisterRequest(CamelModel):
     email: EmailStr
     password: str
     first_name: str
@@ -11,25 +13,25 @@ class RegisterRequest(BaseModel):
     device_info: Optional[str] = None
 
 
-class LoginRequest(BaseModel):
+class LoginRequest(CamelModel):
     email: EmailStr
     password: str
     device_info: Optional[str] = None
 
 
-class RefreshRequest(BaseModel):
+class RefreshRequest(CamelModel):
     refresh_token: str
     device_info: Optional[str] = None
 
 
-class LogoutRequest(BaseModel):
+class LogoutRequest(CamelModel):
     refresh_token: str
 
 
-class ForgotPasswordRequest(BaseModel):
+class ForgotPasswordRequest(CamelModel):
     email: EmailStr
 
 
-class ResetPasswordRequest(BaseModel):
+class ResetPasswordRequest(CamelModel):
     token: str
     new_password: str

@@ -1,9 +1,9 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from src.core.base_schema import CamelModel
 
 
-class AccountCreateRequest(BaseModel):
+class AccountCreateRequest(CamelModel):
     name: str
     amount: float = 0.0
     icon_name: str
@@ -12,7 +12,7 @@ class AccountCreateRequest(BaseModel):
     include_in_total: bool = True
 
 
-class AccountUpdateRequest(BaseModel):
+class AccountUpdateRequest(CamelModel):
     name: Optional[str] = None
     amount: Optional[float] = None
     icon_name: Optional[str] = None

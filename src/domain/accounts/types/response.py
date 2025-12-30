@@ -1,9 +1,9 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from src.core.base_schema import CamelModel
 
 
-class AccountResponse(BaseModel):
+class AccountResponse(CamelModel):
     id: int
     name: str
     amount: float
@@ -12,6 +12,3 @@ class AccountResponse(BaseModel):
     currency: str
     include_in_total: bool
     user_id: int
-
-    class Config:
-        from_attributes = True

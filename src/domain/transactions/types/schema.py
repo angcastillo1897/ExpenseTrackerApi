@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from src.core.base_schema import CamelModel
 
 
-class TransactionSerializer(BaseModel):
+class TransactionSerializer(CamelModel):
     id: int
     amount: float
     currency: str
@@ -17,6 +17,3 @@ class TransactionSerializer(BaseModel):
     user_id: int
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True

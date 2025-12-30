@@ -1,16 +1,16 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from src.core.base_schema import CamelModel
 
 
-class TokensBase(BaseModel):
+class TokensBase(CamelModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
 
 
-class CreateRefreshToken(BaseModel):
+class CreateRefreshToken(CamelModel):
     user_id: int
     token_hash: str
     device_info: Optional[str] = None
@@ -18,7 +18,7 @@ class CreateRefreshToken(BaseModel):
     expires_at: datetime
 
 
-class CreatePasswordResetToken(BaseModel):
+class CreatePasswordResetToken(CamelModel):
     user_id: int
     token_hash: str
     expires_at: datetime
